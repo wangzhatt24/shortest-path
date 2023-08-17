@@ -17,22 +17,22 @@ interface GameData {
   barrierPoints: Point[];
 }
 
-function getSumValueOfPointValue(str: string) {
-  // check str match 
-  if (str.match(/v_\d+:\d+/) === null) {
-    throw new Error("Chuỗi không đúng định dạng")
-  }
+// function getSumValueOfPointValue(str: string) {
+//   // check str match 
+//   if (str.match(/v_\d+:\d+/) === null) {
+//     throw new Error("Chuỗi không đúng định dạng")
+//   }
 
-  // sample: v_0:1
-  //Lay ra 0:1
-  const strSplit1 = str.split("_")
+//   // sample: v_0:1
+//   //Lay ra 0:1
+//   const strSplit1 = str.split("_")
 
-  const strSplit2 = strSplit1[1].split(":")
+//   const strSplit2 = strSplit1[1].split(":")
 
-  const sum = Number(strSplit2[0]) + Number(strSplit2[1])
+//   const sum = Number(strSplit2[0]) + Number(strSplit2[1])
 
-  return sum
-}
+//   return sum
+// }
 
 function createPlayground(n: number) {
   // Làm từ table
@@ -130,6 +130,7 @@ function rightVertexUpper(vertextKey: string) {
 function leftHandler(vertexKey: string) {
   const leftVertex = leftVertexUpper(vertexKey)
 
+  //@ts-ignore
   if (myGraph.vertices[leftVertex] === undefined) {
     // do nothing
   } else {
@@ -144,6 +145,7 @@ function leftHandler(vertexKey: string) {
 function rightHandler(vertextKey: string) {
   const rightVertex = rightVertexUpper(vertextKey)
 
+  //@ts-ignore
   if (myGraph.vertices[rightVertex] === undefined) {
     // do nothing
   } else {
@@ -167,6 +169,7 @@ function getShortestPathsByDijkstra(vertexBegin: string, graph: Graph): Shortest
  * màu đỏ nhé
  */
 function colorPath(shorestPaths: ShortestPaths, vertexDesKey: string) {
+  //@ts-ignore
   if (shorestPaths.previousVertices[vertexDesKey] === null) {
     return null;
   } else {
@@ -174,6 +177,7 @@ function colorPath(shorestPaths: ShortestPaths, vertexDesKey: string) {
     const td = document.getElementById(id) as HTMLDataElement
     td.style.backgroundColor = 'red'
 
+    //@ts-ignore
     return colorPath(shorestPaths, shorestPaths.previousVertices[vertexDesKey].value)
   }
 }
@@ -305,6 +309,7 @@ addBarrierBtn.addEventListener("click", () => {
   const pushBarrier = checkAndPushBarrier(barrier)
 
   // Xóa đỉnh barrier trong tập đỉnh của graph
+  //@ts-ignore
   delete myGraph.vertices[`v_${barrier.id}`]
 
   if (pushBarrier) {
