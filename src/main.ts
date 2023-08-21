@@ -168,7 +168,7 @@ function getShortestPathsByDijkstra(vertexBegin: string, graph: Graph): Shortest
  * và tô màu những path đó
  * màu đỏ nhé
  */
-function colorPath(shorestPaths: ShortestPaths, vertexDesKey: string) {
+function colorShortestPaths(shorestPaths: ShortestPaths, vertexDesKey: string) {
   //@ts-ignore
   if (shorestPaths.previousVertices[vertexDesKey] === null) {
     return null;
@@ -178,7 +178,7 @@ function colorPath(shorestPaths: ShortestPaths, vertexDesKey: string) {
     td.style.backgroundColor = 'red'
 
     //@ts-ignore
-    return colorPath(shorestPaths, shorestPaths.previousVertices[vertexDesKey].value)
+    return colorShortestPaths(shorestPaths, shorestPaths.previousVertices[vertexDesKey].value)
   }
 }
 
@@ -349,6 +349,5 @@ createGraphBtn.addEventListener("click", () => {
   
   const shorestPaths = getShortestPathsByDijkstra(`v_${gameData.startingPoint?.id}`, myGraph)
   console.log(shorestPaths)
-  colorPath(shorestPaths, `v_${gameData.endingPoint?.id}`)
+  colorShortestPaths(shorestPaths, `v_${gameData.endingPoint?.id}`)
 })
-
