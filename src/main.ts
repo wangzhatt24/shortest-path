@@ -3,8 +3,9 @@ import Graph from "./data-structures/graph/Graph";
 import GraphEdge from "./data-structures/graph/GraphEdge";
 import GraphVertex from "./data-structures/graph/GraphVertex";
 import bfsOnGraph from "./my-implement/bfs-on-graph/bfs-on-graph";
-import { colorSpanTagsWithIds } from "./utils/color-span-tags-with-ids/color-span-tags-with-ids";
+import dfsOnGraph from "./my-implement/dfs-on-graph/dfs-on-graph";
 import { colorVisitedVertexsByVertexId } from "./utils/color-visited-vertexs/color-vertexs";
+import printGraphEdges from "./utils/print-graph-edges/print-graph-edges";
 import { printVisitedVertexs } from "./utils/printVisitedVertexs/print-visited-vertexs";
 import { removeV_s } from "./utils/remove-v_/remove-v_";
 
@@ -209,7 +210,7 @@ const gameData: GameData = {
 const playgroundInitBtn = document.getElementById("playgroundInitBtn") as HTMLButtonElement
 playgroundInitBtn.addEventListener("click", () => {
   const playgroundInitInput = document.getElementById("playgroundInitInput") as HTMLInputElement | null
-  const playgroundData = document.getElementById("playgroundData") as HTMLParagraphElement
+  const playgroundDataP = document.getElementById("playgroundDataP") as HTMLParagraphElement
 
   if (playgroundInitInput === null) throw new Error("Nhập vào null")
   if (didInitPlayground) throw new Error("Playground đã được khởi tạo")
@@ -226,7 +227,7 @@ playgroundInitBtn.addEventListener("click", () => {
   didInitPlayground = true
 
   // Thông báo
-  playgroundData.textContent = `Khởi tạo với n = ${playgroundInitInput.value}`
+  playgroundDataP.textContent = `Khởi tạo với n = ${playgroundInitInput.value} với tập cạnh sau đây`
 })
 
 
@@ -357,8 +358,12 @@ createGraphBtn.addEventListener("click", () => {
   p.textContent = "Graph đã được tạo thành công!"
   createGrapStatusDiv.appendChild(p)
 
-  // console.log(`Graph đã được tạo thành công!`)
-  // console.log(myGraph)
+  console.log(`Graph đã được tạo thành công!`)
+  console.log(myGraph)
+
+  // in tập cạnh
+  const playgroundData = document.getElementById("playgroundData") as HTMLDivElement
+  printGraphEdges(myGraph, playgroundData)
 })
 
 
@@ -381,12 +386,30 @@ bfsOnGraphBtn.addEventListener("click", () => {
   const goalVertex = myGraph.getVertexByKey(`v_${gameData.endingPoint?.id}`)
 
   //@ts-ignore
-  const visitedVertex = bfsOnGraph(myGraph, startingVertex, goalVertex)
+  const visitedVertexs = bfsOnGraph(myGraph, startingVertex, goalVertex)
 
   // Tô màu những đỉnh đã duyệt
-  colorVisitedVertexsByVertexId(removeV_s(visitedVertex), "yellow")
+  colorVisitedVertexsByVertexId(removeV_s(visitedVertexs), "yellow")
 
   // Xuất thông tin những đỉnh đã duyệt lên màn hình
   const bfsOnGraphStatus = document.getElementById("bfsOnGraphStatus") as HTMLDivElement
-  printVisitedVertexs(removeV_s(visitedVertex),"yellow", bfsOnGraphStatus)
+  printVisitedVertexs(removeV_s(visitedVertexs),"yellow", bfsOnGraphStatus)
+})
+
+
+const dfsOnGraphBtn = document.getElementById("dfsOnGraphBtn") as HTMLButtonElement
+dfsOnGraphBtn.addEventListener("click", () => {
+  //@ts-ignore
+  const startingVertex = myGraph.getVertexByKey(`v_${gameData.startingPoint?.id}`)
+  //@ts-ignore
+  const goalVertex = myGraph.getVertexByKey(`v_${gameData.endingPoint?.id}`)
+
+  const visitedVertexs = dfsOnGraph(startingVertex, goalVertex)
+
+  // Tô màu những đỉnh đã duyệt
+  colorVisitedVertexsByVertexId(removeV_s(visitedVertexs), "aqua")
+
+  // Xuất thông tin những đỉnh đã duyệt lên màn hình
+  const dfsOnGraphStatus = document.getElementById("dfsOnGraphStatus") as HTMLDivElement
+  printVisitedVertexs(removeV_s(visitedVertexs),"aqua", dfsOnGraphStatus)
 })
