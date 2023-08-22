@@ -69,12 +69,23 @@
               </div>
               <div id="startingPointData">
                 <p>Điểm bắt đầu</p>
+                <br>
               </div>
               <div id="endingPointData">
                 <p>Điểm kết thúc</p>
+                <br>
               </div>
               <div id="barrierData">
                 <p>Danh sách vật cản: </p>
+                <br>
+              </div>
+              <div id="createGraphStatus"></div>
+              <div id="bfsOnGraphStatus">
+                <p>BFS - Những đỉnh đã duyệt</p>
+                <br>
+              </div>
+              <div id="dfsOnGraphStatus">
+                <p>DFS - Những đỉnh đã duyệt</p>
                 <br>
               </div>
             </div>
@@ -85,6 +96,16 @@
 
     <br>
     <button id="createGraphBtn">Tạo graph</button>
+
+    <br>
+    <button id="dijkstraSearchBtn">Tìm bằng Dijkstra</button>
+
+    <br>
+    <button id="bfsOnGraphBtn">Tìm bằng BFS</button>
+
+    <br>
+    <button id="dfsOnGraphBtn">Tìm bằng DFS</button>
+
     <div id="root"></div>
   </div>
   <script type="module" src="/src/main.ts"></script>

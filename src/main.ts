@@ -2,6 +2,11 @@ import dijkstra, { ShortestPaths } from "./algorithms/graph/dijkstra/dijkstra";
 import Graph from "./data-structures/graph/Graph";
 import GraphEdge from "./data-structures/graph/GraphEdge";
 import GraphVertex from "./data-structures/graph/GraphVertex";
+import bfsOnGraph from "./my-implement/bfs-on-graph/bfs-on-graph";
+import { colorSpanTagsWithIds } from "./utils/color-span-tags-with-ids/color-span-tags-with-ids";
+import { colorVisitedVertexsByVertexId } from "./utils/color-visited-vertexs/color-vertexs";
+import { printVisitedVertexs } from "./utils/printVisitedVertexs/print-visited-vertexs";
+import { removeV_s } from "./utils/remove-v_/remove-v_";
 
 interface Point {
   id: string;
@@ -347,7 +352,41 @@ createGraphBtn.addEventListener("click", () => {
     leftHandler(key)
   }
   
+  const createGrapStatusDiv = document.getElementById("createGraphStatus") as HTMLDivElement
+  const p = document.createElement("p")
+  p.textContent = "Graph đã được tạo thành công!"
+  createGrapStatusDiv.appendChild(p)
+
+  // console.log(`Graph đã được tạo thành công!`)
+  // console.log(myGraph)
+})
+
+
+const dijkstraSearchBtn = document.getElementById("dijkstraSearchBtn") as HTMLButtonElement
+dijkstraSearchBtn.addEventListener("click", () => {
   const shorestPaths = getShortestPathsByDijkstra(`v_${gameData.startingPoint?.id}`, myGraph)
+
+  console.log(`Shortest path by dijkstra`)
   console.log(shorestPaths)
+
   colorShortestPaths(shorestPaths, `v_${gameData.endingPoint?.id}`)
+})
+
+
+const bfsOnGraphBtn = document.getElementById("bfsOnGraphBtn") as HTMLButtonElement
+bfsOnGraphBtn.addEventListener("click", () => {
+  //@ts-ignore
+  const startingVertex = myGraph.getVertexByKey(`v_${gameData.startingPoint?.id}`)
+  //@ts-ignore
+  const goalVertex = myGraph.getVertexByKey(`v_${gameData.endingPoint?.id}`)
+
+  //@ts-ignore
+  const visitedVertex = bfsOnGraph(myGraph, startingVertex, goalVertex)
+
+  // Tô màu những đỉnh đã duyệt
+  colorVisitedVertexsByVertexId(removeV_s(visitedVertex), "yellow")
+
+  // Xuất thông tin những đỉnh đã duyệt lên màn hình
+  const bfsOnGraphStatus = document.getElementById("bfsOnGraphStatus") as HTMLDivElement
+  printVisitedVertexs(removeV_s(visitedVertex),"yellow", bfsOnGraphStatus)
 })
