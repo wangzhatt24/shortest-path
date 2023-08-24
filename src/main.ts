@@ -369,7 +369,9 @@ createGraphBtn.addEventListener("click", () => {
 
 const dijkstraSearchBtn = document.getElementById("dijkstraSearchBtn") as HTMLButtonElement
 dijkstraSearchBtn.addEventListener("click", () => {
+  console.time("Dijkstra time")
   const shorestPaths = getShortestPathsByDijkstra(`v_${gameData.startingPoint?.id}`, myGraph)
+  console.timeEnd("Dijkstra time")
 
   console.log(`Shortest path by dijkstra`)
   console.log(shorestPaths)
@@ -385,8 +387,10 @@ bfsOnGraphBtn.addEventListener("click", () => {
   //@ts-ignore
   const goalVertex = myGraph.getVertexByKey(`v_${gameData.endingPoint?.id}`)
 
+  console.time("BFS time")
   //@ts-ignore
   const visitedVertexs = bfsOnGraph(myGraph, startingVertex, goalVertex)
+  console.timeEnd("BFS time")
 
   // Tô màu những đỉnh đã duyệt
   colorVisitedVertexsByVertexId(removeV_s(visitedVertexs), "yellow")
@@ -404,8 +408,10 @@ dfsOnGraphBtn.addEventListener("click", () => {
   //@ts-ignore
   const goalVertex = myGraph.getVertexByKey(`v_${gameData.endingPoint?.id}`)
 
+  console.time("DFS time")
   const visitedVertexs = dfsOnGraph(startingVertex, goalVertex)
-
+  console.timeEnd("DFS time")
+  
   // Tô màu những đỉnh đã duyệt
   colorVisitedVertexsByVertexId(removeV_s(visitedVertexs), "aqua")
 
