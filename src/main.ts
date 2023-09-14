@@ -2,8 +2,11 @@ import dijkstra, { ShortestPaths } from "./algorithms/graph/dijkstra/dijkstra";
 import Graph from "./data-structures/graph/Graph";
 import GraphEdge from "./data-structures/graph/GraphEdge";
 import GraphVertex from "./data-structures/graph/GraphVertex";
+import aStarSearchOnGraph from "./my-implement/a-star-search-on-graph/a-star-search-on-graph";
 import bfsOnGraph from "./my-implement/bfs-on-graph/bfs-on-graph";
 import dfsOnGraph from "./my-implement/dfs-on-graph/dfs-on-graph";
+import greedySearchOnGraph from "./my-implement/greedy-search-on-graph/greedy-search-on-graph";
+import idsOnGraph from "./my-implement/ids-on-graph/ids-on-graph";
 import { colorVisitedVertexsByVertexId } from "./utils/color-visited-vertexs/color-vertexs";
 import printGraphEdges from "./utils/print-graph-edges/print-graph-edges";
 import { printVisitedVertexs } from "./utils/printVisitedVertexs/print-visited-vertexs";
@@ -49,9 +52,9 @@ function createPlayground(n: number) {
   const table = document.createElement("table")
   table.id = "playgroundTable"
 
-  for (let i = 0; i < n; i++) {
+  for (let i = 1; i <= n; i++) {
     const tr = document.createElement("tr")
-    for (let j = 0; j < n; j++) {
+    for (let j = 1; j <= n; j++) {
       const td = document.createElement("td")
       const tdId = `${i}:${j}`
       // const tdTextContent = `${i}:${j}`
@@ -61,7 +64,7 @@ function createPlayground(n: number) {
 
       td.style.padding = "20px"
       td.style.textAlign = "center"
-      td.style.borderRadius = "50%"
+      // td.style.borderRadius = "50%"
       td.style.border = "1px solid black"
       td.id = tdId
       td.addEventListener("mouseover", () => td.style.cursor = "pointer")
@@ -359,13 +362,130 @@ createGraphBtn.addEventListener("click", () => {
   createGrapStatusDiv.appendChild(p)
 
   console.log(`Graph đã được tạo thành công!`)
-  console.log(myGraph)
+  // console.log(myGraph)
 
   // in tập cạnh
   const playgroundData = document.getElementById("playgroundData") as HTMLDivElement
   printGraphEdges(myGraph, playgroundData)
+
+  // gọi hàm đánh dấu level cho graph
+  levelMark()
+  console.log(myGraph)
+
 })
 
+function levelMark() {
+  const currentVertex = Object.keys(myGraph.vertices)[0]
+  let level = 0
+
+  //@ts-ignore
+  myGraph.level[`level_${level}`] = [currentVertex]
+
+  createLevelFrom(level)
+
+  console.log(myGraph)
+}
+
+function createLevelFrom(level: number) {
+   /**
+   * level_0: [v_1:1]
+   * level_1: [v_1:2, v_2:1]
+   * level_2: [v_1:3, v_2:2, v_3:1]
+   */
+  //từ level 0 tạo level 1 kiểm tra level tiếp theo có thể hay không?
+  let levelVertexs: string[] = []
+
+  while(true) {
+    //@ts-ignore
+    let vertexsFromLevel: string[] = myGraph.level[`level_${level}`]
+    vertexsFromLevel.forEach(v => {
+      getPossibleNeighborVertex(v).forEach(v => {
+        levelVertexs.push(v)
+      })
+    })
+
+
+    levelVertexs = removeDuplicatedVertexs(levelVertexs)
+    levelVertexs = removeInvalidVertexs(levelVertexs)
+    levelVertexs = removeBarrierVertexs(levelVertexs)
+
+    if(levelVertexs.length === 0) {
+      break;
+    }
+
+    level++
+
+    //@ts-ignore
+    myGraph.level[`level_${level}`] = [...levelVertexs]
+    levelVertexs.length = 0
+  }
+}
+
+function removeBarrierVertexs(levelVertexs: string[]) {
+  // lấy tất cả barrier
+  // duyệt từng levelvertex nào có chứa barrier thì bỏ
+  const allBarrierTds = document.getElementsByClassName("barrier")
+  const barrierIds: string[] = []
+
+  for (const e of allBarrierTds) {
+    barrierIds.push(`v_${e.id}`)
+  }
+
+  return levelVertexs.filter(lv => !barrierIds.includes(lv))
+}
+
+function removeDuplicatedVertexs(levelVertexs: string[]) {
+  const newSet = new Set(levelVertexs)
+  return Array.from(newSet)
+}
+
+function removeInvalidVertexs(levelVertexs: string[]) {
+  return levelVertexs.filter(lv => {
+    return isValidVertex(lv)
+  })
+}
+
+function getVertexsFromLevel(level: number): string[] {
+  //@ts-ignore
+  return myGraph.level[`level_${level}`]
+}
+
+function isTraveledVertex(vertex: string, vertexTraveled: string[]) {
+  return vertexTraveled.includes(vertex)
+}
+
+function isValidVertex(vertex: string) {
+  if(myGraph.getVertexByKey(vertex)) {
+    return true
+  } else {
+    return false
+  }
+}
+
+function getPossibleNeighborVertex(vertex: string): string[] {
+  const playgroundInitInput = document.getElementById("playgroundInitInput") as HTMLInputElement
+  const n = Number(playgroundInitInput.value)
+  const [x, y] = getCoordinates(vertex)
+
+  const result = []
+
+  if(y + 1 <= n) {
+    result.push(`v_${x}:${y+1}`)
+  }
+
+  if(x + 1 <= n) {
+    result.push(`v_${x+1}:${y}`)
+  }
+
+  return result
+}
+
+function getCoordinates(vertex: string) {
+  //v_0:1
+  const [x, y] = vertex.split("_")[1].split(":")
+
+  return [Number(x), Number(y)]
+}
 
 const dijkstraSearchBtn = document.getElementById("dijkstraSearchBtn") as HTMLButtonElement
 dijkstraSearchBtn.addEventListener("click", () => {
@@ -419,3 +539,67 @@ dfsOnGraphBtn.addEventListener("click", () => {
   const dfsOnGraphStatus = document.getElementById("dfsOnGraphStatus") as HTMLDivElement
   printVisitedVertexs(removeV_s(visitedVertexs),"aqua", dfsOnGraphStatus)
 })
+
+const idsOnGraphBtn = document.getElementById("idsOnGraphBtn") as HTMLButtonElement
+idsOnGraphBtn.addEventListener("click", () => {
+  //@ts-ignore
+  const startingVertex = myGraph.getVertexByKey(`v_${gameData.startingPoint?.id}`)
+  //@ts-ignore
+  const goalVertex = myGraph.getVertexByKey(`v_${gameData.endingPoint?.id}`)
+
+  console.time("IDS time")
+  const result = idsOnGraph(startingVertex, goalVertex, myGraph)
+  console.log(result)
+  console.timeEnd("IDS time")
+
+  // Tô màu những đỉnh đã duyệt
+  // colorVisitedVertexsByVertexId(removeV_s(result.visitedVertexs), "blue")
+
+  // Xuất thông tin những đỉnh đã duyệt lên màn hình
+  const idsOnGraphStatus = document.getElementById("idsOnGraphStatus") as HTMLDivElement
+  const p = document.createElement("p")
+  // p.textContent = `Found at level: ${result.foundAt}`
+  idsOnGraphStatus.appendChild(p)
+  // printVisitedVertexs(removeV_s(result.visitedVertexs),"blue", idsOnGraphStatus)
+})
+
+const greedySearchOnGraphBtn = document.getElementById("greedySearchOnGraphBtn") as HTMLButtonElement
+greedySearchOnGraphBtn.addEventListener("click", () => {
+  //@ts-ignore
+  const startingVertex = myGraph.getVertexByKey(`v_${gameData.startingPoint?.id}`)
+  //@ts-ignore
+  const goalVertex = myGraph.getVertexByKey(`v_${gameData.endingPoint?.id}`)
+
+  console.time("Greedy Search Time")
+  const result = greedySearchOnGraph(startingVertex, goalVertex, myGraph)
+  console.log(result)
+  console.timeEnd("Greedy Search Time")
+
+  // Tô màu những đỉnh đã duyệt
+  colorVisitedVertexsByVertexId(removeV_s(result), "orange")
+
+  // Xuất thông tin những đỉnh đã duyệt lên màn hình
+  const greedySearchOnGraphStatus = document.getElementById("greedySearchOnGraphStatus") as HTMLDivElement
+  printVisitedVertexs(removeV_s(result), "orange", greedySearchOnGraphStatus)
+})
+
+const aStarSearchOnGraphBtn = document.getElementById("aStarSearchOnGraphBtn") as HTMLButtonElement
+aStarSearchOnGraphBtn.addEventListener("click", () => {
+  //@ts-ignore
+  const startingVertex = myGraph.getVertexByKey(`v_${gameData.startingPoint?.id}`)
+  //@ts-ignore
+  const goalVertex = myGraph.getVertexByKey(`v_${gameData.endingPoint?.id}`)
+
+  console.time("A start Search Time")
+  const result = aStarSearchOnGraph(startingVertex, goalVertex, myGraph)
+  console.log(result)
+  console.timeEnd("A start Search Time")
+
+  // Tô màu những đỉnh đã duyệt
+  colorVisitedVertexsByVertexId(removeV_s(result), "pink")
+
+  // Xuất thông tin những đỉnh đã duyệt lên màn hình
+  const aStarSearchOnGraphStatus = document.getElementById("greedySearchOnGraphStatus") as HTMLDivElement
+  printVisitedVertexs(removeV_s(result), "pink", aStarSearchOnGraphStatus)
+})
+

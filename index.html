@@ -29,7 +29,7 @@
               <details open>
                 <summary>Bước 0. Luật trò chơi</summary>
                 <pre>
-                  Cho một bàn cờ kích thước n x n.
+                  Cho một sân chơi kích thước n x n.
                   Hãy tìm đường đi ngắn nhất từ điểm bắt đầu đến điểm kết thúc biết rằng
                   Các ô trắng là đường đi
                   Các ô đen là vật cản, không đi được
@@ -84,20 +84,39 @@
                 <br>
               </div>
               <div id="endingPointData">
+                <br>
                 <p>Điểm kết thúc</p>
                 <br>
               </div>
               <div id="barrierData">
+                <br>
                 <p>Danh sách vật cản: </p>
                 <br>
               </div>
               <div id="createGraphStatus"></div>
               <div id="bfsOnGraphStatus">
+                <br>
                 <p>BFS - Những đỉnh đã duyệt</p>
                 <br>
               </div>
               <div id="dfsOnGraphStatus">
+                <br>
                 <p>DFS - Những đỉnh đã duyệt</p>
+                <br>
+              </div>
+              <div id="idsOnGraphStatus">
+                <br>
+                <p>IDS - Những đỉnh đã duyệt</p>
+                <br>
+              </div>
+              <div id="greedySearchOnGraphStatus">
+                <br>
+                <p>Greedy Search - Những đỉnh đã duyệt</p>
+                <br>
+              </div>
+              <div id="aStarSearchOnGraphStatus">
+                <br>
+                <p>A star - Những đỉnh đã duyệt</p>
                 <br>
               </div>
             </div>
@@ -117,6 +136,15 @@
 
     <br>
     <button id="dfsOnGraphBtn">Tìm bằng DFS</button>
+
+    <br>
+    <button id="idsOnGraphBtn">Tìm bằng IDS(Sâu dần)</button>
+
+    <br>
+    <button id="greedySearchOnGraphBtn">Tìm bằng giải thuật tham lam</button>
+
+    <br>
+    <button id="aStarSearchOnGraphBtn">Tìm bằng giải thuật A*</button>
 
     <div id="root"></div>
   </div>

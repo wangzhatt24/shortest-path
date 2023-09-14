@@ -6,6 +6,7 @@ export default class Graph {
     this.vertices = {};
     this.edges = {};
     this.isDirected = isDirected;
+    this.level = {};
   }
 
   /**
