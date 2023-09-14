@@ -445,15 +445,6 @@ function removeInvalidVertexs(levelVertexs: string[]) {
   })
 }
 
-function getVertexsFromLevel(level: number): string[] {
-  //@ts-ignore
-  return myGraph.level[`level_${level}`]
-}
-
-function isTraveledVertex(vertex: string, vertexTraveled: string[]) {
-  return vertexTraveled.includes(vertex)
-}
-
 function isValidVertex(vertex: string) {
   if(myGraph.getVertexByKey(vertex)) {
     return true
@@ -553,14 +544,14 @@ idsOnGraphBtn.addEventListener("click", () => {
   console.timeEnd("IDS time")
 
   // Tô màu những đỉnh đã duyệt
-  // colorVisitedVertexsByVertexId(removeV_s(result.visitedVertexs), "blue")
+  colorVisitedVertexsByVertexId(removeV_s(result.visitedVertexs), "blue")
 
   // Xuất thông tin những đỉnh đã duyệt lên màn hình
   const idsOnGraphStatus = document.getElementById("idsOnGraphStatus") as HTMLDivElement
   const p = document.createElement("p")
-  // p.textContent = `Found at level: ${result.foundAt}`
+  p.textContent = `Found at level: ${result.atLevel}`
   idsOnGraphStatus.appendChild(p)
-  // printVisitedVertexs(removeV_s(result.visitedVertexs),"blue", idsOnGraphStatus)
+  printVisitedVertexs(removeV_s(result.visitedVertexs),"blue", idsOnGraphStatus)
 })
 
 const greedySearchOnGraphBtn = document.getElementById("greedySearchOnGraphBtn") as HTMLButtonElement

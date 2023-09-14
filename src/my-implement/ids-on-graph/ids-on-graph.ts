@@ -69,6 +69,7 @@ function vertexIsVisited(visitedVertex: string[], vertex: GraphVertex) {
 export default function idsOnGraph(startingVertex: GraphVertex, goalVertex: GraphVertex, myGraph: Graph) {
   let currentLevel = 0
   let dlsResult = dlsOnGraph(startingVertex, goalVertex, currentLevel, myGraph)
+
   while(dlsResult.founded === false) {
     currentLevel = currentLevel + 1
     dlsResult = dlsOnGraph(startingVertex, goalVertex, currentLevel, myGraph)
