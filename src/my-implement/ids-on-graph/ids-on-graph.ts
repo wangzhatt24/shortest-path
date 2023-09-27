@@ -84,6 +84,12 @@ export default function idsOnGraph(startingVertex: GraphVertex, goalVertex: Grap
 function verterIsOutOfLevel(currentVertex: GraphVertex, level: number, myGraph: Graph) {
   for (let l = 0; l <= level; l++) {
     //@ts-ignore
+    // console.log(myGraph.level[`level_${l}`])
+    //@ts-ignore
+    if(myGraph.level[`level_${l}`] === undefined) {
+      return false
+    }
+    //@ts-ignore
     if (myGraph.level[`level_${l}`].includes(currentVertex.getKey())) {
       return false
     }

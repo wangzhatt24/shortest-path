@@ -1,6 +1,8 @@
 import Graph from "../../data-structures/graph/Graph";
 import GraphVertex from "../../data-structures/graph/GraphVertex";
+import { GameData } from "../../main";
 import getVertexCoordinates from "../../utils/getVertexCoordinates/getVertexCoordinates";
+import { cellOperationCal } from "../greedy-search-on-graph/greedy-search-on-graph";
 
 function h(currentVertex: GraphVertex, goalVertex: GraphVertex) {
   const [Xcv, Ycv] = getVertexCoordinates(currentVertex)
@@ -9,11 +11,11 @@ function h(currentVertex: GraphVertex, goalVertex: GraphVertex) {
   return Math.sqrt(Math.pow((Xcv - Xg), 2) + Math.pow((Ycv - Yg), 2))
 }
 
-function fN(gN: number, hN: number) {
-  return gN + hN
+function fN(gN: number, hN: number, cellOperationValue: number) {
+  return gN + hN + cellOperationValue
 }
 
-export default function aStarSearchOnGraph(startingVertex: GraphVertex, goalVertex: GraphVertex, myGraph: Graph) {
+export default function aStarSearchOnGraph(startingVertex: GraphVertex, goalVertex: GraphVertex, myGraph: Graph, gameData: GameData) {
   /**
    * Tại đỉnh hiện tại
    * Nếu là goal trả về đỉnh đã duyệt
@@ -39,7 +41,7 @@ export default function aStarSearchOnGraph(startingVertex: GraphVertex, goalVert
       let neighbors = currentVertex.getNeighbors()
       neighbors = removeVisitedOnNeighbors(neighbors, visitedVertexs)
       // console.log(neighbors)
-      shouldGoVertex = evaluateShouldGoVertex(neighbors, goalVertex, gN)
+      shouldGoVertex = evaluateShouldGoVertex(neighbors, goalVertex, gN, gameData)
     }
   }
 }
@@ -48,23 +50,24 @@ function removeVisitedOnNeighbors(neighbors: GraphVertex[], visitedVertexs: stri
   return neighbors.filter(n => !visitedVertexs.includes(n.getKey()))
 }
 
-function evaluateShouldGoVertex(neighbors: GraphVertex[], goalVertex: GraphVertex, gN: number) {
+function evaluateShouldGoVertex(neighbors: GraphVertex[], goalVertex: GraphVertex, gN: number, gameData: GameData) {
   // trả về {vertex: vertex, h: number}
   const firstRound = neighbors.map(n => {
     return {
       vertex: n,
-      h: h(n, goalVertex)
+      h: h(n, goalVertex),
+      cellOperationValue: cellOperationCal(n, gameData)
     }
   })
-
+  // console.log(`first round: `, firstRound)
   // return {vertex: vertex, f: number}
   const secondRound = firstRound.map(o => {
     return {
       vertex: o.vertex,
-      f: fN(gN, o.h)
+      f: fN(gN, o.h, o.cellOperationValue)
     }
   })
-
+  // console.log(`second round: `, secondRound)
   let min = secondRound[0]
 
   secondRound.forEach(o => {

@@ -12,18 +12,27 @@ import printGraphEdges from "./utils/print-graph-edges/print-graph-edges";
 import { printVisitedVertexs } from "./utils/printVisitedVertexs/print-visited-vertexs";
 import { removeV_s } from "./utils/remove-v_/remove-v_";
 
+enum cellOperationData {
+  incre = "increase scrore",
+  decre = "decrease scrore",
+  no = "no"
+}
+
 interface Point {
   id: string;
   x: number;
   y: number;
   sum: number;
+  cellOperation: cellOperationData;
 }
 
-interface GameData {
-  n: number | null;
+export interface GameData {
+  n: number;
   startingPoint: Point | null;
   endingPoint: Point | null;
   barrierPoints: Point[];
+  increasePoints: Point[];
+  decreasePoints: Point[];
 }
 
 // function getSumValueOfPointValue(str: string) {
@@ -202,10 +211,12 @@ wikipedia giai thuat tim kiem A*
 const root = document.getElementById("root") as HTMLDivElement
 let didInitPlayground = false;
 const gameData: GameData = {
-  n: null,
+  n: 0,
   startingPoint: null,
   endingPoint: null,
-  barrierPoints: []
+  barrierPoints: [],
+  increasePoints: [],
+  decreasePoints: [],
 }
 
 
@@ -220,12 +231,12 @@ playgroundInitBtn.addEventListener("click", () => {
 
   // Tạo playground sử dụng table với kích thước n*n
   const n = Number(playgroundInitInput.value)
-  const playground = createPlayground(n);
+  const playground = createPlayground(n)
 
   // Sửa thông tin trong gameData
   gameData.n = n
 
-  // Nhét playground vào root
+  // Bỏ playground vào root
   root.appendChild(playground)
   didInitPlayground = true
 
@@ -242,13 +253,15 @@ startingPointInitBtn.addEventListener("click", () => {
   const td = document.getElementById(`${xStartingPoint.value}:${yStartingPoint.value}`) as HTMLDataElement
 
   td.style.backgroundColor = "green"
+  td.style.border = "5px solid green"
 
   // Lưu vào gameData
   gameData.startingPoint = {
     id: td.id,
     x: Number(xStartingPoint.value),
     y: Number(yStartingPoint.value),
-    sum: Number(xStartingPoint.value) + Number(yStartingPoint.value)
+    sum: Number(xStartingPoint.value) + Number(yStartingPoint.value),
+    cellOperation: cellOperationData.no
   }
 
   // Xuất thông báo ra html 
@@ -274,13 +287,15 @@ endingPointInitBtn.addEventListener("click", () => {
   const td = document.getElementById(`${xEndingPoint.value}:${yEndingPoint.value}`) as HTMLDataElement
 
   td.style.backgroundColor = "blue"
+  td.style.border = "5px solid blue"
 
   // Lưu vào gameData
   gameData.endingPoint = {
     id: td.id,
     x: Number(xEndingPoint.value),
     y: Number(yEndingPoint.value),
-    sum: Number(xEndingPoint.value) + Number(yEndingPoint.value)
+    sum: Number(xEndingPoint.value) + Number(yEndingPoint.value),
+    cellOperation: cellOperationData.no
   }
 
   // Xuất thông báo ra html 
@@ -307,13 +322,14 @@ addBarrierBtn.addEventListener("click", () => {
   const td = document.getElementById(`${xBarrierPoint.value}:${yBarrierPoint.value}`) as HTMLDataElement
 
   td.style.backgroundColor = "DarkGray"
-  td.className = "barrier"
+  td.classList.add("barrier")
 
-  const barrier = {
+  const barrier: Point = {
     id: `${xBarrierPoint.value}:${yBarrierPoint.value}`,
     x: Number(xBarrierPoint.value),
     y: Number(yBarrierPoint.value),
-    sum: Number(xBarrierPoint.value) + Number(yBarrierPoint.value)
+    sum: Number(xBarrierPoint.value) + Number(yBarrierPoint.value),
+    cellOperation: cellOperationData.no 
   }
   const pushBarrier = checkAndPushBarrier(barrier)
 
@@ -336,6 +352,71 @@ addBarrierBtn.addEventListener("click", () => {
   }
 })
 
+// Đặt ô tăng điểm vào playground
+const addIncreaseBtn = document.getElementById("addIncreaseBtn") as HTMLButtonElement
+addIncreaseBtn.addEventListener("click", () => {
+  const xIncreasePoint = document.getElementById("xIncreasePoint") as HTMLInputElement
+  const yIncreasePoint = document.getElementById("yIncreasePoint") as HTMLInputElement
+  const td = document.getElementById(`${xIncreasePoint.value}:${yIncreasePoint.value}`) as HTMLDataElement
+
+  td.style.border = '5px solid #00BFFF'
+  td.classList.add('increasePoint')
+
+  // Lưu vào gameData
+  const increasePoint: Point = {
+    id: td.id,
+    x: Number(xIncreasePoint.value),
+    y: Number(yIncreasePoint.value),
+    sum: Number(xIncreasePoint.value) + Number(yIncreasePoint.value),
+    cellOperation: cellOperationData.incre
+  }
+  gameData.increasePoints.push(increasePoint)
+
+  // Xuất thông báo ra html 
+  const increasePointData = document.getElementById("increasePointData") as HTMLDivElement
+  const span = document.createElement("span") as HTMLSpanElement
+  span.textContent = `${increasePoint.id}`
+  span.style.border = '1px solid #00BFFF'
+  span.style.padding = '5px'
+  span.style.borderRadius = '3px'
+  span.style.display = 'inline-block'
+  // span.style.backgroundColor = 'green'
+
+  increasePointData.appendChild(span)
+})
+
+// Đặt ô trừ điểm vào playground
+const addDecreaseBtn = document.getElementById("addDecreaseBtn") as HTMLButtonElement
+addDecreaseBtn.addEventListener("click", () => {
+  const xDecreasePoint = document.getElementById("xDecreasePoint") as HTMLInputElement
+  const yDecreasePoint = document.getElementById("yDecreasePoint") as HTMLInputElement
+  const td = document.getElementById(`${xDecreasePoint.value}:${yDecreasePoint.value}`) as HTMLDataElement
+
+  td.style.border = '5px solid chocolate'
+  td.classList.add('increasePoint')
+
+  // Lưu vào gameData
+  const decreasePoint: Point = {
+    id: td.id,
+    x: Number(xDecreasePoint.value),
+    y: Number(yDecreasePoint.value),
+    sum: Number(xDecreasePoint.value) + Number(yDecreasePoint.value),
+    cellOperation: cellOperationData.decre
+  }
+  gameData.decreasePoints.push(decreasePoint)
+
+  // Xuất thông báo ra html 
+  const decreasePointData = document.getElementById("decreasePointData") as HTMLDivElement
+  const span = document.createElement("span") as HTMLSpanElement
+  span.textContent = `${decreasePoint.id}`
+  span.style.border = '1px solid chocolate'
+  span.style.padding = '5px'
+  span.style.borderRadius = '3px'
+  span.style.display = 'inline-block'
+  // span.style.backgroundColor = 'green'
+
+  decreasePointData.appendChild(span)
+})
 
 // Graph section
 const myGraph = new Graph()
@@ -384,6 +465,7 @@ function levelMark() {
   createLevelFrom(level)
 
   console.log(myGraph)
+  console.log(gameData)
 }
 
 function createLevelFrom(level: number) {
@@ -540,7 +622,7 @@ idsOnGraphBtn.addEventListener("click", () => {
 
   console.time("IDS time")
   const result = idsOnGraph(startingVertex, goalVertex, myGraph)
-  console.log(result)
+  // console.log(result)
   console.timeEnd("IDS time")
 
   // Tô màu những đỉnh đã duyệt
@@ -562,8 +644,8 @@ greedySearchOnGraphBtn.addEventListener("click", () => {
   const goalVertex = myGraph.getVertexByKey(`v_${gameData.endingPoint?.id}`)
 
   console.time("Greedy Search Time")
-  const result = greedySearchOnGraph(startingVertex, goalVertex, myGraph)
-  console.log(result)
+  const result = greedySearchOnGraph(startingVertex, goalVertex, myGraph, gameData)
+  // console.log(result)
   console.timeEnd("Greedy Search Time")
 
   // Tô màu những đỉnh đã duyệt
@@ -582,15 +664,15 @@ aStarSearchOnGraphBtn.addEventListener("click", () => {
   const goalVertex = myGraph.getVertexByKey(`v_${gameData.endingPoint?.id}`)
 
   console.time("A start Search Time")
-  const result = aStarSearchOnGraph(startingVertex, goalVertex, myGraph)
-  console.log(result)
+  const result = aStarSearchOnGraph(startingVertex, goalVertex, myGraph, gameData)
+  // console.log(result)
   console.timeEnd("A start Search Time")
 
   // Tô màu những đỉnh đã duyệt
   colorVisitedVertexsByVertexId(removeV_s(result), "pink")
 
   // Xuất thông tin những đỉnh đã duyệt lên màn hình
-  const aStarSearchOnGraphStatus = document.getElementById("greedySearchOnGraphStatus") as HTMLDivElement
+  const aStarSearchOnGraphStatus = document.getElementById("aStarSearchOnGraphStatus") as HTMLDivElement
   printVisitedVertexs(removeV_s(result), "pink", aStarSearchOnGraphStatus)
 })
 
