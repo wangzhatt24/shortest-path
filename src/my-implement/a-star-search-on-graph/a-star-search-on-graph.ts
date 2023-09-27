@@ -15,6 +15,7 @@ function fN(gN: number, hN: number, cellOperationValue: number) {
   return gN + hN + cellOperationValue
 }
 
+//@ts-ignore
 export default function aStarSearchOnGraph(startingVertex: GraphVertex, goalVertex: GraphVertex, myGraph: Graph, gameData: GameData) {
   /**
    * Tại đỉnh hiện tại

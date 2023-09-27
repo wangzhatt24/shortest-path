@@ -27,6 +27,7 @@ function h(currentVertex: GraphVertex, goalVertex: GraphVertex, gameData: GameDa
 }
 
 
+//@ts-ignore
 export default function greedySearchOnGraph(startingVertex: GraphVertex, goalVertex: GraphVertex, myGraph: Graph, gameData: GameData) {
   /**
    * Tại đỉnh hiện tại
